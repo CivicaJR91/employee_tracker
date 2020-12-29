@@ -69,11 +69,16 @@ function runTracker() {
 
 function viewDepartments(){
     const query = "SELECT * FROM deparment";
-    connection.query(query, function(err,res){
+    connection.query(query, function(err, rows){
         if(err) throw err;
-            console.log("All Deparments: " + res[0].name);
-            console.log("All Deparments: " + res[1].name);
-            console.log("All Deparments: " + res[2].name);
-        
+        console.log(rows);
     });
+}
+
+function viewRoles(){
+    const query = "SELECT * FROM role";
+    connection.query(query, function(err, rows){
+        if(err) throw err;
+        console.log(rows);
+    })
 }
