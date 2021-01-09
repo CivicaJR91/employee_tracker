@@ -3,21 +3,23 @@
 use employee_tracker;
 -- Inserting records into the table
 
--- insert into deparment(id, name) values (1, "Marketing");
--- insert into deparment(id, name) values (2, "Creative");
--- insert into deparment(id, name) values (3, "Sales");
+insert into deparment(name) values ("Marketing");
+insert into deparment(name) values ("Creative");
+insert into deparment(name) values ("Sales");
+insert into deparment (name) values ("Business Intelligent");
 
--- insert into role(id, title, salary, department_id) values(110, "Sales Manager", 80000,3);
--- insert into role(id, title, salary, department_id) values(111, "Creative Manager", 80000,2);
--- insert into role(id, title, salary, department_id) values(112, "Associate Creative", 50000,2);
--- insert into role(id, title, salary, department_id) values(113, "Marketing Associate", 50000,1);
--- insert into role(id, title, salary, department_id) values(310, "Sales Director", 120000,3);
--- insert into role(id, title, salary, department_id) values(311, "Creative Director", 120000,2);
--- insert into role(id, title, salary, department_id) values(312, "Marketing Director", 120000,1);
+insert into role(title, salary, department_id) values("Sales Manager", 80000,3);
+insert into role(title, salary, department_id) values("Creative Manager", 80000,2);
+insert into role(title, salary, department_id) values("Associate Creative", 50000,2);
+insert into role(title, salary, department_id) values("Marketing Associate", 50000,1);
+insert into role(title, salary, department_id) values("Sales Director", 120000,3);
+insert into role(title, salary, department_id) values("Creative Director", 120000,2);
+insert into role(title, salary, department_id) values("Marketing Director", 120000,1);
 
--- insert into employee(id,first_name,last_name,role_id,manager_id) values (201, "John", "Smith", 101, 310);
--- insert into employee(id,first_name,last_name,role_id,manager_id) values (203, "Paul", "Zimmerman", 103, 111);
--- insert into employee(id,first_name,last_name,role_id,manager_id) values (204, "Jessica", "Simpson", 103, 312);
+insert into employee(first_name,last_name,role_id,manager_id) values ("John", "Smith", 1, 2);
+SET FOREIGN_KEY_CHECKS=0;
+insert into employee(first_name,last_name,role_id) values ("Paul", "Zimmerman",5);
+insert into employee(first_name,last_name,role_id) values ("Jessica", "Simpson",4);
 
 
 
