@@ -24,11 +24,10 @@ id int not null auto_increment,
 first_name varchar(30),
 last_name varchar(30),
 role_id int,							
-manager_id int,
+manager_id int null,
 primary key(id),
 FOREIGN KEY (role_id) REFERENCES role(id),
 FOREIGN KEY (manager_id) REFERENCES employee(id)
-
 );
 
 

@@ -152,128 +152,142 @@ function addRoles() {
         ]).then(function (answer) {
             const department = "SELECT id FROM deparment WHERE name = ?";
             let id;
-            connection.query(department, [answer.deparmentid], function (err,result){
+            connection.query(department, [answer.deparmentid], function (err, result) {
                 for (i = 0; i < result.length; i++) {
-                        id= result[i].id;
-                        console.log(result[i]);
-                        console.log(result[i].id);
+                    id = result[i].id;
+                    console.log(result[i]);
+                    console.log(result[i].id);
 
-                    }
-            })
-            connection.query("INSERT INTO role set ?", {
+                }
+                connection.query("INSERT INTO role set ?", {
                     title: answer.roletitle,
                     salary: answer.salary,
                     department_id: id,
                 }, function (err) {
                     if (err) throw err;
                     console.log("Role Was Updated");
-                });  
-                viewRoles();   
+                    viewRoles();
+                });
+            })
+
         });
     })
-
 
 }
 
 function addEmployee() {
-    inquirer.prompt([
-        {
-            name: "employeeid",
-            type: "input",
-            message: "Enter Employee ID"
-        },
-        {
-            name: "first",
-            type: "input",
-            message: "Enter Employee First Name"
-        },
-        {
-            name: "last",
-            type: "input",
-            message: "Enter Employee Last Name"
-        },
-        {
-            name: "roleid",
-            type: "input",
-            message: "Enter Role Id"
-        },
-        {
-            name: "managerid",
-            type: "input",
-            message: "Enter Employee's Manager Id"
-        }
-    ]).then(function (answer) {
-        connection.query("INSERT INTO employee SET ?", {
-            id: answer.employeeid,
-            first_name: answer.first,
-            last_name: answer.last,
-            role_id: answer.roleid,
-            manager_id: answer.managerid
-        },
-            function (err) {
-                if (err) throw err;
-                console.log("Employee Was Added!")
-            });
-        viewEmployees();
-
-    });
-}
-
-function updateEmployeeRole() {
-
-    connection.query("SELECT concat(first_name, ',', last_name) AS EmployeeName FROM employee", function (err, res) {// do a join here to bring Roles
+    connection.query("SELECT title FROM role;", function (err, res) {
         if (err) throw err;
 
         inquirer.prompt([
             {
-                name: "updateemployee",
+                name: "first",
+                type: "input",
+                message: "Enter Employee First Name"
+            },
+            {
+                name: "last",
+                type: "input",
+                message: "Enter Employee Last Name"
+            },
+            {
+                name: "roleid",
                 type: "list",
                 choices: function () {
-                    const emplName = [];
+                    const roleTitle = [];
                     for (var i = 0; i < res.length; i++) {
-                        emplName.push(res[i].EmployeeName);//concatenei first_name and last_name
+                        roleTitle.push(res[i].title);
                     }
-                    return emplName;
+                    return roleTitle;
                 },
-                message: "Select the employee that you want to update"
+                message: "Select Role"
+            },
+            {
+                name: "managerid",
+                type: "input",
+                message: "Enter Employee's Manager Id"
             }
-
         ]).then(function (answer) {
-            console.log("You Are Updating" + answer.updateemployee);
-            const employeeName = answer.updateemployee
+            const roleid = "SELECT id FROM role WHERE title = ?";
+            let id;
+            connection.query(roleid, [answer.roleid], function (err, result) {
+                for (var i = 0; i < result.length; i++) {
+                    id = result[i].id;
+                    console.log(result[i]);
+                    console.log(result[i].id);
+                }
 
-            connection.query("SELECT id, title FROM role", function (err, res) {
-                if (err) throw err;
+                connection.query("SET FOREIGN_KEY_CHECKS=0;");
+                connection.query("INSERT INTO employee SET ?", {
+                    first_name: answer.first,
+                    last_name: answer.last,
+                    role_id: id,
+                    manager_id: answer.managerid
+                },
+                    function (err) {
+                        if (err) throw err;
+                        console.log("Employee Was Added!")
+                        viewEmployees();
+                    });
+            })
 
-                inquirer.prompt([
-                    {
-                        name: "updatingrole",
-                        type: "list",
-                        chices: function () {
-                            const roleName = [];
-                            for (var i = 0; i < res.length; i++) {
-                                roleName.push(res[i].title);
-                            }
-                            return roleName;
-                        },
-                        message: "Sele Employee Role"
-                    }
-                ])
+        });
+    });
+}
 
+function updateEmployeeRole() {
+    const emplList = "SELECT concat(first_name, ',', last_name) AS EmployeeName FROM employee";
+    
+    connection.query(emplList, function(err,res){
+        if(err) throw err;
+            inquirer.prompt([
+                {
+                    name: "updateemployee",
+                    type: "list",
+                    choices: function () {
+                        const emplName = [];
+                        for (var i = 0; i < res.length; i++) {
+                            emplName.push(res[i].EmployeeName);//concatenei first_name and last_name
+                        }
+                        return emplName;
+                    },
+                    message: "Select the employee that you want to update"
+                }
+            ]).then(function(answer){
+                const roleList = "SELECT title FROM role";
+                connection.query(roleList, function(err,res){
+                    if(err) throw err;
+                    inquirer.prompt([
+                        {
+                            name: "updaterole",
+                            type: "list",
+                            choices: function () {
+                                const roles = [];
+                                for (var i = 0; i < res.length; i++) {
+                                    roles.push(res[i].title);
+                                }
+                                return roles;
+                            },
+                            message:"Select Role"
+                        }
+                    ])
+                })
+                connection.query("")
 
             })
-        })
-
+        
     })
+    
+
 
 
 }
-        // {
-        //     name:"updateroleid",
-        //     type:"list",
-        //     message:"Select the role",
-        //     choices: function(){
-        //         connection.query("SELECT id, title FROM role", function(err, res){
+// {
+//     name: "updateroleid",
+//         type: "list",
+//             message: "Select the role",
+//                 choices: function() {
+//         //         connection.query("SELECT id, title FROM role", function(err, res){
         //             if (err) throw err;
         //         })
         //     }
