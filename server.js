@@ -11,7 +11,7 @@ const connection = mySQL.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "",// ADD YOUR MYSQL PASSWORD HERE
+    password: "MYSQL01233",// ADD YOUR MYSQL PASSWORD HERE
     database: "employee_tracker"
 });
 
@@ -236,72 +236,44 @@ function addEmployee() {
 }
 
 function updateEmployeeRole() {
-    const emplList = "SELECT concat(first_name, ',', last_name) AS EmployeeName FROM employee";
-    
-    connection.query(emplList, function(err,res){
-        if(err) throw err;
-            inquirer.prompt([
-                {
-                    name: "updateemployee",
-                    type: "list",
-                    choices: function () {
-                        const emplName = [];
-                        for (var i = 0; i < res.length; i++) {
-                            emplName.push(res[i].EmployeeName);//concatenei first_name and last_name
-                        }
-                        return emplName;
-                    },
-                    message: "Select the employee that you want to update"
+    const emplList = "select  concat(employee.first_name,' ', employee.last_name) AS EmployeeName, role.title from employee inner join role on employee.role_id = role.id";
+
+    connection.query(emplList, function (err, res) {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                name: "updateemployee",
+                type: "list",
+                choices: function () {
+                    const emplName = [];
+                    for (var i = 0; i < res.length; i++) {
+                        emplName.push(res[i].EmployeeName);//concatenei first_name and last_name
+                    }
+                    return emplName;
+                },
+                message: "Select the employee that you want to update"
+            },
+            {
+                name: "updaterole",
+                type: "list",
+                choices: function () {
+                    const roles = [];
+                    for (var i = 0; i < res.length; i++) {
+                        roles.push(res[i].title);
+                    }
+                    return roles;
+                },
+                message: "Select Role"
+            }
+        ]).then(function(answer){
+            const roleid = "SELECT id FROM role WHERE title = ?";
+            connection.query(roleid, [answer.updaterole], function (err, result) {
+                for (var i = 0; i < result.length; i++) {
+                    id = result[i].id;
+                    console.log(result[i]);
                 }
-            ]).then(function(answer){
-                const roleList = "SELECT title FROM role";
-                connection.query(roleList, function(err,res){
-                    if(err) throw err;
-                    inquirer.prompt([
-                        {
-                            name: "updaterole",
-                            type: "list",
-                            choices: function () {
-                                const roles = [];
-                                for (var i = 0; i < res.length; i++) {
-                                    roles.push(res[i].title);
-                                }
-                                return roles;
-                            },
-                            message:"Select Role"
-                        }
-                    ])
-                })
-                connection.query("")
-
             })
-        
-    })
-    
 
-
-
-}
-// {
-//     name: "updateroleid",
-//         type: "list",
-//             message: "Select the role",
-//                 choices: function() {
-//         //         connection.query("SELECT id, title FROM role", function(err, res){
-        //             if (err) throw err;
-        //         })
-        //     }
-        // }.then(function (answer){
-        //     connection.query("UPDATE role_id SET ? WHERE ?",[
-        //         {first_name, last_name: answer.updateemployee}, // set
-        //         {role_id:answer.updateroleid} //where
-
-        //     ])
-        // })
-
-    // ])
-// }
-// function endConnection() {
-//     connection.end();
-// }
-
+        })
+    }
+)}
