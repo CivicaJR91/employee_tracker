@@ -11,7 +11,7 @@ const connection = mySQL.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "MYSQL01233",// ADD YOUR MYSQL PASSWORD HERE
+    password: "",// ADD YOUR MYSQL PASSWORD HERE
     database: "employee_tracker"
 });
 
@@ -236,20 +236,44 @@ function addEmployee() {
 }
 
 function updateEmployeeRole() {
-    const emplList = "select  concat(employee.first_name,' ', employee.last_name) AS EmployeeName, role.title from employee inner join role on employee.role_id = role.id";
+    const emplList = "select  employee.first_name,employee.last_name, role.title from employee right join role on employee.role_id = role.id";
 
     connection.query(emplList, function (err, res) {
         if (err) throw err;
         inquirer.prompt([
             {
-                name: "updateemployee",
+                name: "selectfn",
                 type: "list",
                 choices: function () {
                     const emplName = [];
+                    // const filter = emplName.filter(function () {
+                    //     return true
+                    //   });
                     for (var i = 0; i < res.length; i++) {
-                        emplName.push(res[i].EmployeeName);//concatenei first_name and last_name
+                        emplName.push(res[i].first_name);//concatenei first_name and last_name
                     }
-                    return emplName;
+                    const filter = emplName.filter(function (el) {
+                        return el != null;
+                      });
+                       return filter;
+                },
+                message: "Select Employee First Name"
+            },
+            {
+                name: "selectln",
+                type: "list",
+                choices: function () {
+                    const emplLn = [];
+                    // const filter = emplName.filter(function () {
+                    //     return true
+                    //   });
+                    for (var i = 0; i < res.length; i++) {
+                        emplLn.push(res[i].last_name);//concatenei first_name and last_name
+                    }
+                    const filter = emplLn.filter(function (el) {
+                        return el != null;
+                      });
+                       return filter;
                 },
                 message: "Select the employee that you want to update"
             },
@@ -267,11 +291,30 @@ function updateEmployeeRole() {
             }
         ]).then(function(answer){
             const roleid = "SELECT id FROM role WHERE title = ?";
+            let id;
             connection.query(roleid, [answer.updaterole], function (err, result) {
                 for (var i = 0; i < result.length; i++) {
                     id = result[i].id;
                     console.log(result[i]);
                 }
+                const query = "UPDATED employee SET first_name =? , last_name =?  WHERE role_id = ?";
+                connection.query(query, [
+                    {
+                        first_name:answer.selectfn,
+                        last_name: answer.selectln  
+                        
+                    },
+                    {
+                        
+                        role_id: id
+                    }
+                ],
+                function (err) {
+                    if (err) throw err;
+                    console.log("Role Was Updated");
+                    viewEmployees();
+                }
+                );
             })
 
         })
