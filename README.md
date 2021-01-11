@@ -16,8 +16,9 @@ To be able to run this application, ensure you have a password for MySQL Workben
 * Console.table (Only if you want to display table)
 
 # Application In Action
-GIF of the application
+![Application](./gif/Tracker.gif)
 
-# URLs:
-Github Repository:
-Video Link:
+# URL:
+Github Repository:https://github.com/CivicaJR91/employee_tracker
+
+
